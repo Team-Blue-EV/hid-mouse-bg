@@ -1,5 +1,5 @@
 // библиотека която емулира мишка
-#include "Mouse.h"
+#include <Mouse.h>
 
 // set pin numbers for switch, joystick axes, and LED:
 // const int switchPin = 2;    // switch to turn on and off mouse control
@@ -65,13 +65,13 @@ void loop() {
   }
 
   // Прочитаме стойноста на душащия сенсор
-  int temp =analogRead(mouseClick);
+  int temp = analogRead(mouseClick);
 
   // ако стойноста (temp - BlowRange) > InitBlow, тогава налягането е по-голямо и натискаме левия бутон на мишката 
   if ((temp - BlowRange) > InitBlow) {
     // Проверяваме дали бутона е натиснат, ако не е го натискаме.
     if (!Mouse.isPressed(MOUSE_LEFT)) {
-      / казваме на мишката че бутона е натиснат
+      // казваме на мишката че бутона е натиснат
       Mouse.press(MOUSE_LEFT);
     }
   }
