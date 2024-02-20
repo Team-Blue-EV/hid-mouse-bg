@@ -2,13 +2,11 @@
 #include <Mouse.h>
 
 // set pin numbers for switch, joystick axes, and LED:
-// const int switchPin = 2;    // switch to turn on and off mouse control
 // const int mouseButton = 3;  // input pin for the mouse pushButton
 
 const int mouseClick = A0;  // Вход от сензора за духане
 const int xAxis = A1;       // joystick X axis пин към Ардуино за ос X 
 const int yAxis = A2;       // joystick Y axis пин към Ардуино за ос Y
-//const int ledPin = 5;       // Mouse control LED
 
 int InitBlow = 0;     // инициализация сензора за духане
 int BlowRange=200;    // праг на духане
@@ -23,12 +21,6 @@ bool mouseIsActive = true;  // Активиране на мишката
 int lastSwitchState = LOW;  // в момента не се използва
 
 void setup() {
-  // не се използва
-  /*
-  pinMode(switchPin, INPUT);  // the switch pin
-  pinMode(ledPin, OUTPUT);    // the LED pin
-  */
-
   // Прочитане на аналоговия сензор за душане
   InitBlow = analogRead (mouseClick);
 
@@ -44,16 +36,6 @@ void setup() {
 }
 
 void loop() {
-  // Прочитане на ключа, тука ти не го ползвах, затова е коментирано
-  /*
-  int switchState = digitalRead(switchPin);
-  if (switchState != lastSwitchState) {
-    if (switchState == HIGH) {
-      digitalWrite(ledPin, mouseIsActive);
-    }
-  }
-  lastSwitchState = switchState;
-  */
   
   // Четеме кординати на джойстика за X,Y
   int xReading = readAxis(xAxis);
