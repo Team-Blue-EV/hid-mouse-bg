@@ -22,6 +22,9 @@ https://www.thingiverse.com/thing:1090461?fbclid=IwAR2kc0HJp9Xr3e-kwmvUrwzIt-gi6
 Arduino Pro Micro има HID подръжка която емулира движение на мишката, версията която се използва е 3.3V
 https://www.sparkfun.com/products/12587
 
+или Arduino Pro Micro 3.3V Leonardo
+https://vi.aliexpress.com/item/1871481789.html?gatewayAdapt=glo2vnm&fbclid=IwAR1QBqnoogIiUHltJUFVKQxq1eGCPPFXcHDAFYMpcuEm5Zd0Nd6o7vKJBpQ
+
 Модул – джойстик, аналогов с бутон:
 https://erelement.com/shop/joystick-module/
 
