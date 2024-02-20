@@ -1,13 +1,10 @@
 // библиотека която емулира мишка
 #include <Mouse.h>
 
-const int mouseClick = A0;  // Вход от сензора за духане
+const int sensorPin = A0;  // Вход от сензора за духане
 const int xAxis = A1;       // joystick X axis пин към Ардуино за ос X 
 const int yAxis = A2;       // joystick Y axis пин към Ардуино за ос Y
-//const int ledPin = 5;       // Mouse control LED
 
-int InitBlow = 0;     // инициализация сензора за духане
-int BlowRange=200;    // праг на духане
 
 // параметри на joystick, те служат за калибриране:
 int range = 8;
@@ -16,56 +13,15 @@ int threshold = range / 4;  // resting threshold
 int center = range / 2;     // resting position value
 
 bool mouseIsActive = true;  // Активиране на мишката
-int lastSwitchState = LOW;  // в момента не се използва
 
-void setup() {
-  // Прочитане на аналоговия сензор за душане
-  InitBlow = analogRead (mouseClick);
+unsigned long total = 0;
+unsigned long numReadings = 0;
+unsigned long previousMillis = 0;
+unsigned long avarage = 0;
+unsigned long tempValue = 0;
 
-  // Инициализиране на сериния изход
-  Serial.begin(9600);
-
-  // Инициализиране на библиотеката на мишката
-  Mouse.begin();
-
-  // Разпечатване на стойноста на сензора.
-  Serial.println(InitBlow);
-
-}
-
-void loop() {
-  // Четеме кординати на джойстика за X,Y
-  int xReading = readAxis(xAxis);
-  int yReading = readAxis(yAxis);
-
-  // Ако флаг mouseIsActive е TRUE преместваме мишката, той по подразбиране е TRUE
-  if (mouseIsActive) {
-    Mouse.move(xReading, yReading, 0);
-  }
-
-  // Прочитаме стойноста на душащия сенсор
-  int temp = analogRead(mouseClick);
-
-  // ако стойноста (temp - BlowRange) > InitBlow, тогава налягането е по-голямо и натискаме левия бутон на мишката 
-  if ((temp - BlowRange) > InitBlow) {
-    // Проверяваме дали бутона е натиснат, ако не е го натискаме.
-    if (!Mouse.isPressed(MOUSE_LEFT)) {
-      // казваме на мишката че бутона е натиснат
-      Mouse.press(MOUSE_LEFT);
-    }
-  }
-  // ако налягането е по-малко
-  else {
-    // проверяваме дали бутона е натиснат, ако е натиснат, казваме на мишката че бутона се освобождава
-    if (Mouse.isPressed(MOUSE_LEFT)) {
-      // казваме на мишката че бутона се освобождава
-      Mouse.release(MOUSE_LEFT);
-    }
-  }
-
-  // Правим едно забавяне от порядъка на 5 мили секунди
-  delay(responseDelay);
-}
+bool LeftMouse = false;
+bool RightMouse = false;
 
 // Функция която чете дани от джоистика
 int readAxis(int thisAxis) {
@@ -84,4 +40,90 @@ int readAxis(int thisAxis) {
 
   // връщане на стойноста:
   return distance;
+}
+
+void setup() {
+  // Прочитане на аналоговия сензор за душане
+  InitBlow = analogRead (sensorPin);
+
+  // Инициализиране на сериния изход
+  Serial.begin(9600);
+
+  // Инициализиране на библиотеката на мишката
+  Mouse.begin();
+
+}
+
+void loop() {
+  // Четеме кординати на джойстика за X,Y
+  int xReading = readAxis(xAxis);
+  int yReading = readAxis(yAxis);
+
+  // Ако флаг mouseIsActive е TRUE преместваме мишката, той по подразбиране е TRUE
+  if (mouseIsActive) {
+    Mouse.move(xReading, yReading, 0);
+  }
+
+  // прочитане на моментната стойност за налягането
+  unsigned long sensorValue = analogRead(sensorPin);
+  delay(3);
+
+  // добавяме новата стойност към общата сума
+  total += sensorValue;
+  // вдигане на брояча
+  numReadings++;
+ 
+  // Проверка дали е изминало времето за проверка
+  if ((millis() - previousMillis) >= 700) {
+    previousMillis = millis();
+
+    // намиране на средната стойност
+    avarage=(long)(total/numReadings);
+
+    // ако разликата в налягането е повече от 180 - силно духане клик десен
+    if ((avarage-tempValue) >= 180) {
+      LeftMouse=false;
+      RightMouse=true;
+
+    // ако разликата в налягането е повече от 60 - по слабо духане клик ляв
+    }else if ((avarage-tempValue) >= 60) {
+      LeftMouse=true;
+      RightMouse=false;
+
+    // нама десен лил ляв клик
+    }else{
+      LeftMouse=false;
+      RightMouse=false;
+    }
+
+    // зануляване на стойностите
+    tempValue=avarage;
+    total=0;
+    numReadings=0;
+  }else{
+    LeftMouse=false;
+    RightMouse=false;
+  }
+
+  // ако флага е LeftMouse
+  if (LeftMouse) {
+    if (!Mouse.isPressed(MOUSE_LEFT)) {
+      // казваме на мишката че бутона е натиснат
+      Mouse.press(MOUSE_LEFT);
+    }
+    //Serial.println("LeftMouse");
+  }
+
+  // ако флага е RightMouse
+  if (RightMouse) {
+    if (!Mouse.isPressed(MOUSE_RIGHT)) {
+      // казваме на мишката че бутона е натиснат
+      Mouse.press(MOUSE_RIGHT);
+    }
+    //Serial.println("RightMouse");
+  }
+
+  
+  // Правим едно забавяне от порядъка на 5 мили секунди
+  delay(responseDelay);
 }
