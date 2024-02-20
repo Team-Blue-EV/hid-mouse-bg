@@ -6,7 +6,7 @@ const int xAxis = A1;       // joystick X axis пин към Ардуино за
 const int yAxis = A2;       // joystick Y axis пин към Ардуино за ос Y
 
 3. Душащия сензор NXP MP3V5004GP се свързва с пин A0.
-const int mouseClick = A0;  // Вход от сензора за духане
+const int sensorPin = A0;  // Вход от сензора за духане
 
 Използва се библиотека Mouse.h
 
